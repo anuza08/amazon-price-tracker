@@ -26,7 +26,6 @@ const SearchBar = () => {
   };
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    debugger;
     event.preventDefault();
 
     const isValidLink = isValidAmazonUrl(searchPrompt);
