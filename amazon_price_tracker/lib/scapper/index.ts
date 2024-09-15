@@ -1,12 +1,13 @@
 import axios from "axios";
 import * as cheerio from "cheerio";
 import { extractCurrency, extractDescription, extractPrice } from "../utils";
-import { Average } from "next/font/google";
+
+interface PriceHistoryItem {
+  price: number;
+}
 
 export async function scrapeAmazonProduct(url: string) {
   if (!url) return;
-
-  // echo -e "\n\nThis is the VERBOSE version sample cURL code for Web Unlocker.\nIn order to instantly use Web Unlocker, you need to either install an SSL certificate\nor to ignore SSL errors in your code.\n\nThis cURL includes the '-k' option to ignore SSL errors.\n\nPress Enter to continue..." && read input && echo -e "\nThanks. I am going to run the following cURL command now:\n" && echo "curl -i --proxy brd.superproxy.io:22225 --proxy-user brd-customer-hl_1acb0075-zone-web_unlocker1:zl4a7r45evns -k \"https://geo.brdtest.com/welcome.txt\"" && echo -e "\nCopy this cURL if you want to run it in non-verbose mode.\n\nHere's the result of the cURL:\n" && curl -i --proxy brd.superproxy.io:22225 --proxy-user brd-customer-hl_1acb0075-zone-web_unlocker1:zl4a7r45evns -k "https://geo.brdtest.com/welcome.txt" && echo -e "\n\nFor additional information visit:\nhttps://docs.brightdata.com/general/account/ssl-certificate\n"
 
   const username = String(process.env.BRIGHT_DATA_USERNAME);
   const password = String(process.env.BRIGHT_DATA_PASSWORD);
@@ -57,6 +58,8 @@ export async function scrapeAmazonProduct(url: string) {
     const discountRate = $(".savingPrecentage").text().replace(/[-%]/g, "");
     const description = extractDescription($);
 
+    const priceHistory: PriceHistoryItem[] = []; // Initialize as an empty array
+
     const data = {
       url,
       currency: currency || "₹",
@@ -64,13 +67,13 @@ export async function scrapeAmazonProduct(url: string) {
       title,
       currentPrice: Number(currentPrice) || Number(originalPrice),
       originalPrice: Number(originalPrice) || Number(currentPrice),
-      priceHistory: [],
+      priceHistory,
       discountRate: Number(discountRate),
       category: "category",
       reviewsCount: 100,
       stars: 4.5,
       isOutOfStock: outOfStock,
-      description: description,
+      description,
       lowestPrice: Number(currentPrice) || Number(originalPrice),
       highestPrice: Number(originalPrice) || Number(currentPrice),
       averagePrice: Number(currentPrice) || Number(originalPrice),
@@ -78,6 +81,6 @@ export async function scrapeAmazonProduct(url: string) {
 
     return data;
   } catch (error: any) {
-    throw new Error(`Failed to scrape product:${error.message}`);
+    throw new Error(`Failed to scrape product: ${error.message}`);
   }
 }

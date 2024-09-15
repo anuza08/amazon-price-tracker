@@ -1,7 +1,7 @@
 import Model from "@/components/model";
 import PriceInfoCard from "@/components/priceInfoCard";
 import ProductCard from "@/components/productCard";
-import { getProductById, getSimilarProduct } from "@/lib/actions";
+import { getProductById, getSimilarProducts } from "@/lib/actions";
 import { formatNumber } from "@/lib/utils";
 import { Product } from "@/types";
 import { redirect } from "next/dist/server/api-utils";
@@ -10,11 +10,11 @@ import Link from "next/link";
 import { format } from "path";
 import React from "react";
 
-type Props = { params: { id: String } };
+type Props = { params: { id: string } };
 
 const Page = async ({ params: { id } }: Props) => {
   const product: Product = await getProductById(id);
-  const similarProduct = await getSimilarProduct(id);
+  const similarProduct = await getSimilarProducts(id);
 
   // if (!product) redirect("/");
 

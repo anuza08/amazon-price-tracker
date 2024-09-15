@@ -8,20 +8,20 @@ import { getAveragePrice, getHighestPrice, getLowestPrice } from "../utils";
 import { generateEmailBody, sendEmail } from "../nodemailer";
 import { User } from "@/types";
 
-export async function scrpeAndStoreProduct(productUrl: string) {
+export async function scrapeAndStoreProduct(productUrl: string) {
   if (!productUrl) return;
 
   try {
-    connectToDB();
-
+    await connectToDB(); // Await the database connection
     const scrappedProduct = await scrapeAmazonProduct(productUrl);
     if (!scrappedProduct) return;
-    let product = scrappedProduct;
 
-    const exsitingProduct = await Product.findOne({ url: scrappedProduct.url });
-    if (exsitingProduct) {
-      const updatedPriceHistory: any = [
-        ...exsitingProduct.priceHistory,
+    let product = scrappedProduct;
+    const existingProduct = await Product.findOne({ url: scrappedProduct.url });
+
+    if (existingProduct) {
+      const updatedPriceHistory = [
+        ...existingProduct.priceHistory,
         { price: scrappedProduct.currentPrice },
       ];
 
@@ -35,83 +35,78 @@ export async function scrpeAndStoreProduct(productUrl: string) {
     }
 
     const newProduct = await Product.findOneAndUpdate(
-      {
-        url: scrappedProduct.url,
-      },
+      { url: scrappedProduct.url },
       product,
-      {
-        upsert: true,
-        new: true,
-      }
+      { upsert: true, new: true }
     );
 
     revalidatePath(`/Products/${newProduct._id}`);
   } catch (error: any) {
-    throw new Error(`Failed to create/update product: ${error.message}`);
+    console.error(`Failed to create/update product: ${error.message}`);
   }
 }
 
-export async function getProductById(productId: String) {
+export async function getProductById(productId: string) {
   try {
-    connectToDB();
+    await connectToDB(); // Await the database connection
     const product = await Product.findOne({ _id: productId });
 
     if (!product) return null;
 
     return product;
-  } catch (error) {}
-}
-
-export async function getAllProduct() {
-  try {
-    connectToDB();
-
-    const product = await Product.find();
-    console.log({ product });
-    return product;
-  } catch (error) {
-    console.log(error);
+  } catch (error: any) {
+    console.error(`Failed to get product by ID: ${error.message}`);
   }
 }
 
-export async function getSimilarProduct(productId: String) {
+export async function getAllProducts() {
   try {
-    connectToDB();
+    await connectToDB(); // Await the database connection
+    const products = await Product.find();
+    console.log({ products });
+    return products;
+  } catch (error: any) {
+    console.error(`Failed to get all products: ${error.message}`);
+  }
+}
+
+export async function getSimilarProducts(productId: string) {
+  try {
+    await connectToDB(); // Await the database connection
 
     const currentProduct = await Product.findById(productId);
     if (!currentProduct) return null;
 
     const similarProducts = await Product.find({
-      id: { $ne: productId },
+      _id: { $ne: productId },
     }).limit(3);
 
     return similarProducts;
-  } catch (error) {
-    console.log(error);
+  } catch (error: any) {
+    console.error(`Failed to get similar products: ${error.message}`);
   }
 }
 
-export async function addUserEmailToProduct(productId: String, userEmail: any) {
+export async function addUserEmailToProduct(
+  productId: string,
+  userEmail: string
+) {
   try {
-    //send our first email..
-
     const product = await Product.findById(productId);
-
     if (!product) return;
 
     const userExists = product.users.some(
-      (user: User) => userEmail.email === userEmail
+      (user: User) => user.email === userEmail
     );
 
     if (!userExists) {
       product.users.push({ email: userEmail });
       await product.save();
     }
-    const emailContent = generateEmailBody(product, "WELCOME");
-    await sendEmail(await emailContent, [userEmail]);
-  } catch (error) {
-    console.log(error);
+
+    const emailContent = await generateEmailBody(product, "WELCOME");
+    await sendEmail(emailContent, [userEmail]);
+  } catch (error: any) {
+    console.error(`Failed to add user email to product: ${error.message}`);
   }
 }
-
-

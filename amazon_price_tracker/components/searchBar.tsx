@@ -1,5 +1,5 @@
 "use client";
-import { scrpeAndStoreProduct } from "@/lib/actions";
+import { scrapeAndStoreProduct } from "@/lib/actions";
 import React, { FormEvent } from "react";
 import { useState } from "react";
 
@@ -33,7 +33,7 @@ const SearchBar = () => {
 
     try {
       setIsLoading(true);
-      const productData = await scrpeAndStoreProduct(searchPrompt);
+      const productData = await scrapeAndStoreProduct(searchPrompt);
       setProduct(productData);
     } catch (error) {
       console.log(error);
