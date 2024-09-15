@@ -7,6 +7,7 @@ import { Product } from "@/types";
 import { redirect } from "next/dist/server/api-utils";
 import Image from "next/image";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import { format } from "path";
 import React from "react";
 
@@ -16,7 +17,9 @@ const Page = async ({ params: { id } }: Props) => {
   const product: Product = await getProductById(id);
   const similarProduct = await getSimilarProducts(id);
 
-  // if (!product) redirect("/");
+  if (!product) {
+    notFound();
+  }
 
   return (
     <div className="product-container">
