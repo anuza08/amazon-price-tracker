@@ -16,7 +16,7 @@ const Page = async ({ params: { id } }: Props) => {
   const product: Product = await getProductById(id);
   const similarProduct = await getSimilarProduct(id);
 
-  if (!product) redirect("/");
+  // if (!product) redirect("/");
 
   return (
     <div className="product-container">

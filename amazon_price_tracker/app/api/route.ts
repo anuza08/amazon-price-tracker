@@ -8,6 +8,7 @@ import {
   getHighestPrice,
   getLowestPrice,
 } from "@/lib/utils";
+import { NextResponse } from "next/server"; // Import NextResponse for API responses
 
 export async function GET() {
   try {
@@ -15,7 +16,7 @@ export async function GET() {
     const products = await Product.find({});
 
     if (!products || products.length === 0) {
-      throw new Error("No products found");
+      return NextResponse.json({ error: "No products found" }, { status: 404 });
     }
 
     const updatedProducts = await Promise.all(
@@ -72,16 +73,14 @@ export async function GET() {
       })
     );
 
-    return {
-      status: 200,
-      data: updatedProducts,
-      body: updatedProducts.filter((product) => product !== null),
-    };
+    return NextResponse.json({
+      data: updatedProducts.filter((product) => product !== null),
+    });
   } catch (error: any) {
     console.error(`Error in GET: ${error.message}`);
-    return {
-      status: 500,
-      body: { error: `Failed to update products: ${error.message}` },
-    };
+    return NextResponse.json(
+      { error: `Failed to update products: ${error.message}` },
+      { status: 500 }
+    );
   }
 }
