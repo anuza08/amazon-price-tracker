@@ -1,3 +1,4 @@
+import Model from "@/components/model";
 import PriceInfoCard from "@/components/priceInfoCard";
 import ProductCard from "@/components/productCard";
 import { getProductById, getSimilarProduct } from "@/lib/actions";
@@ -156,7 +157,7 @@ const Page = async ({ params: { id } }: Props) => {
                 />
               </div>
             </div>
-            Model
+            <Model productId={id} />
           </div>
         </div>
         <div className="flex flex-col gap-16 ">
