@@ -1,5 +1,7 @@
 ![Screenshot 2024-09-16 133131](https://github.com/user-attachments/assets/f361d2d0-a84e-41b6-9760-529307708dcb)
 
+![Screenshot 2024-09-16 133934](https://github.com/user-attachments/assets/b3350937-52e0-4b50-af23-78d757a825b5)
+
 # PriceWise
 
 Welcome to **PriceWise**, an advanced Amazon price tracker built with Next.js, React, and modern web technologies. **PriceWise** allows you to monitor price changes, track product deals, and get notifications right to your inbox.
