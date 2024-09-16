@@ -1,9 +1,0 @@
-{
-  "functions": {
-    "app/api/**/*.ts": {
-      "runtime": "nodejs18.x"
-    }
-  },
-  "builds": [{ "src": "next.config.js", "use": "@vercel/next" }],
-  "routes": [{ "src": "/(.*)", "dest": "/$1" }]
-}
